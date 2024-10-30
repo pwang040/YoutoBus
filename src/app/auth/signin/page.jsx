@@ -2,7 +2,7 @@
 import React, {useState} from 'react';
 import { useRouter } from 'next/navigation'; // Next.js router
 //need to handle onclick to not send credentials over query parameters
-  const Login = () => {
+  const Signin = () => {
     const [username, setUser] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
@@ -49,4 +49,4 @@ return(
     )
 }
 
-export default Login;
+export default Signin;

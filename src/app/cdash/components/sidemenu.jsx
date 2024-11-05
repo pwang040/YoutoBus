@@ -18,7 +18,7 @@ const SideMenu = () => {
       <button style={styles.menuItem} onClick={() => router.push('/cdash/settings')}>
         Settings
       </button>
-      <button style={styles.menuItem} onClick={() => router.push('/login')}>
+      <button style={styles.menuItem} onClick={() => router.push('/auth/signin')}>
         Logout
       </button>
     </div>

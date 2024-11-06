@@ -29,9 +29,9 @@ const RegisterPage = () => {
 
     if (response.ok) {
       if (formData.role === 'consumer') {
-        router.push('/cdash');
+        router.push('/cdash/profile');
       } else if (formData.role === 'vendor') {
-        router.push('/vdash');
+        router.push('/vdash/profile');
       }
     } else {
       const data = await response.json();

@@ -1,9 +1,13 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-
+import { signOut } from 'next-auth/react';
 const SideMenu = () => {
   const router = useRouter();
-
+  const handleLogout = () => {
+    signOut({
+      callbackUrl: '/auth/signin', // Redirect to the sign-in page after logout
+    });
+  };
   return (
     <div style={styles.menuContainer}>
       <button style={styles.menuItem} onClick={() => router.push('/cdash/profile')}>
@@ -18,7 +22,7 @@ const SideMenu = () => {
       <button style={styles.menuItem} onClick={() => router.push('/cdash/settings')}>
         Settings
       </button>
-      <button style={styles.menuItem} onClick={() => router.push('/auth/signin')}>
+      <button style={styles.menuItem} onClick={handleLogout}>
         Logout
       </button>
     </div>

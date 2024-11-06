@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import connectMongo from '../../../../lib/mongodb.js';
 import User from '../../../../models/User'; // Your User model
+import bcrypt from 'bcryptjs';
 
 export const authOptions = {
   session: {
@@ -16,12 +17,31 @@ export const authOptions = {
         password: { label: 'Password', type: 'password' }
       },
       authorize: async (credentials) => {
+        try{
         await connectMongo();
         const user = await User.findOne({ email: credentials.email });
-        if (user && user.password === credentials.password) {
-          return user;
+        console.log("searching for user..."+ credentials.email);
+        if (user) {
+          console.log("user found: " + user.email);
+          console.log("matching password: "+ credentials.password);
+          console.log("password on file: "+user.password);
+          // Use bcrypt to compare the entered password with the stored hashed password
+          const isMatch = await bcrypt.compare(credentials.password, user.password);
+          if (isMatch) {
+            console.log("password matched, granting access");
+            return user; // Return the user object if the password matches
+          }
+          else{
+            console.log("passowrd mismatch");
+            return null;
+          }
         }
+        // Return null if authentication fails
         return null;
+      } catch (error){
+        console.error('Error during auth: '+ error);
+        return null;
+      }
       }
     }),
 
@@ -32,12 +52,12 @@ export const authOptions = {
   ],
   callbacks: {
     async session({ session, token }) {
-      console.log('Session callback triggered');
+      // console.log('Session callback triggered');
       session.user.role = token.role || null;
       return session;
     },    
     async jwt({ token, user }) {
-      console.log("jwt triggered");
+      // console.log("jwt triggered");
       await connectMongo();
       const existingUser = await User.findOne({ email: token.email });
       
@@ -68,17 +88,11 @@ export const authOptions = {
       return token;
     }
     ,
-    // async redirect({ url, baseUrl, token }) {
-    //   console.log('Redirect Callback Triggered:', url, baseUrl);
-    //   console.log('Current token role ' + token);
-    //   if (token && token.isNewSession) {
-    //     console.log('Redirecting to first-time setup');
-    //     return `${baseUrl}/auth/first-time-setup`; // Custom redirect for new users
-    //   }
+    async redirect({ url, baseUrl }) {
+      // console.log('Redirect Callback Triggered:', url, baseUrl);
+      return `${baseUrl}/auth/after_auth`; // Unconditionally redirect to after_auth
+    }
     
-    //   // Default behavior for existing users
-    //   return url.startsWith('/') || url.startsWith(baseUrl) ? url : baseUrl;
-    // }
     
     
   },

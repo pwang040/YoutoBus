@@ -1,40 +1,53 @@
 'use client'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 
 const FirstTimeSetupPage = () => {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const [role, setRole] = useState('');
   const [error, setError] = useState(null);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!role) {
       setError('Please select a role.');
       return;
     }
-
-    const response = await fetch('/api/complete-setup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: session.user.email, role }),
-    });
-
-    if (response.ok) {
-      if (role === 'consumer') {
-        router.push('/cdash');
-      } else if (role === 'vendor') {
-        router.push('/vdash');
+  
+    try {
+      // Update the role in the database
+      const response = await fetch('/api/update-role', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: session.user.email, role }),
+      });
+  
+      if (response.ok) {
+        // Refresh the session to reflect the updated role
+        router.push('/auth/signin');
+        setTimeout(() => {
+          router.push('/auth/signin');
+        }, 500);
+      } else {
+        setError('An error occurred while completing the setup. Please try again.');
       }
-    } else {
+    } catch (error) {
+      console.error('Error updating the role:', error);
       setError('An error occurred while completing the setup. Please try again.');
     }
   };
+  
 
   if (status === 'loading') return <p>Loading...</p>;
+
+  // Redirect to the sign-in page if the user is not authenticated
+  if (status === 'unauthenticated') {
+    router.push('/auth/signin');
+    return null;
+  }
 
   return (
     <div style={styles.container}>

@@ -11,23 +11,19 @@ const Signin = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     const result = await signIn('credentials', {
       redirect: false,
       email: username,
-      password,
+      password: password,
     });
-
+  
     if (result && result.ok) {
-      if (username === 'client') {
-        router.push('/cdash/profile');
-      } else if (username === 'vendor') {
-        router.push('/vdash/profile');
-      }
+      router.push('/auth/after_auth'); // Adjust this to the post-login route
     } else {
-      setError("Invalid username or password. Please try again.");
+      setError('Invalid credentials, please try again.');
     }
   };
+  
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -42,7 +38,7 @@ const Signin = () => {
   return (
     <div style={styles.container}>
       <div style={styles.formContainer}>
-        <button onClick={() => signIn('google', { callbackUrl: '/auth/after_auth'})} style={styles.oauthButton}>Sign in with Google</button>
+        <button onClick={() => signIn('google')} style={styles.oauthButton}>Sign in with Google</button>
         <h2>Or Sign in with Email</h2>
 
         {error && <p style={styles.error}>{error}</p>}

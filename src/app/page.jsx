@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation'; // Next.js router
-
+import { signOut } from 'next-auth/react';
 export default function Home() {
   const router = useRouter();
 
@@ -8,11 +8,16 @@ export default function Home() {
     e.preventDefault();
     router.push('/auth/signin');
   };
-
+  const handleLogout = () => {
+    signOut({
+      callbackUrl: '/auth/signin', // Redirect to the sign-in page after logout
+    });
+  };
   return (
     <div style={styles.container}>
       <div style={styles.text}>Welcome to YouToBus Prototype by Patrick Wang</div>
       <button onClick={handleClick} style={styles.button}>Sign In</button>
+      <button onClick={handleLogout} style={styles.button}>Emergency Eject!</button>
     </div>
   );
 }

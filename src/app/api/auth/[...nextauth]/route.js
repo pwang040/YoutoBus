@@ -56,37 +56,53 @@ export const authOptions = {
       session.user.role = token.role || null;
       return session;
     },    
-    async jwt({ token, user }) {
-      // console.log("jwt triggered");
+    async jwt({ token, user, account }) {
+      console.log("JWT callback triggered");
+    
+      // Connect to MongoDB
       await connectMongo();
+    
+      // Check if the user already exists in the database
       const existingUser = await User.findOne({ email: token.email });
-      
+      console.log('Searching for user: ' + token.email);
       if (user) {
-        // This runs when a new session is being established
-        console.log("new session created");
-        token.isNewSession = !existingUser;
-      } else {
-        console.log("not a new session");
-        token.isNewSession = false;
+        console.log('Account provider:', account.provider);
+
+      }
+      
+      // If the user exists and is an OAuth user, update the `verified` field
+      if (user && account.provider === 'google' && existingUser && !existingUser.verified) {
+        console.log('Google OAuth user detected, marking as verified');
+        await User.updateOne({ email: token.email }, { verified: "true" });
+        const updateResult = await User.updateOne({ email: token.email }, { verified: "true" });
+        console.log(`Update Result:`, updateResult); // Check for `nModified` to confirm the update
+
+        existingUser.verified = "true"; // Update locally in case it's reused in the function
+        console.log('user verified: "' + token.email);
       }
     
-      // Attach role or other data as needed
+      // If user is new (i.e., not in DB), create a new user document
       if (!existingUser) {
-        // Create new user logic or other data setup
+        console.log("Creating new user");
         const newUser = await User.create({
           name: token.name,
           email: token.email,
-          role: 'new', // Example value for new user
+          role: 'new',  // Assign a default role
+          verified: account?.provider === 'google' ? "true" : "false", // Automatically verify OAuth users
         });
         token.role = newUser.role;
-        console.log("Creating new user " + token.role);
+        console.log("New user created: "+ account.provider + '||' + newUser.verified);
+        token.isNewSession = true;
       } else {
+        // If user already exists, assign their role and session status
         token.role = existingUser.role;
-        console.log("User exists " + token.role);
+        token.isNewSession = false;
+        console.log("Existing user detected: " + token.role);
       }
     
       return token;
     }
+    
     ,
     async redirect({ url, baseUrl }) {
       // console.log('Redirect Callback Triggered:', url, baseUrl);

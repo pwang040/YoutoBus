@@ -31,6 +31,7 @@
     "next": "14.2.14",
     "next-auth": "^4.24.10",
     "node-cmd": "^5.0.0",
+    "nodemailer": "^6.9.16",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "prom-client": "^15.0.0",

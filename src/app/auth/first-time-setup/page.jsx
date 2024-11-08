@@ -27,10 +27,14 @@ const FirstTimeSetupPage = () => {
   
       if (response.ok) {
         // Refresh the session to reflect the updated role
-        router.push('/auth/signin');
-        setTimeout(() => {
-          router.push('/auth/signin');
-        }, 500);
+        await update(); // Refresh session after role update
+        
+        // Redirect to the appropriate dashboard
+        if (role === 'consumer') {
+          router.push('/cdash/profile');
+        } else if (role === 'vendor') {
+          router.push('/vdash/profile');
+        }
       } else {
         setError('An error occurred while completing the setup. Please try again.');
       }
@@ -39,6 +43,7 @@ const FirstTimeSetupPage = () => {
       setError('An error occurred while completing the setup. Please try again.');
     }
   };
+  
   
 
   if (status === 'loading') return <p>Loading...</p>;

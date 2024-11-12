@@ -6,9 +6,7 @@ const profile = () => {
     return(
         <div style={styles.dashboardLayout}>
             <SideMenu/>
-            <div>profile page</div>
-            <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ' target="_blank" rel="noopener noreferrer" style={styles.text}>huh?</a>
-            <a href="https://www.google.com" target="_blank" rel="noopener noreferrer">google</a>
+            <div>Vendor profile page</div>
         </div>
     )
 }

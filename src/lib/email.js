@@ -18,8 +18,8 @@ export async function sendVerificationEmail(to, token) {
     from: '"YouToBus" <no-reply@yourapp.com>',
     to,
     subject: 'Verify Your Email Address',
-    text: `Hello! Please verify your email by clicking the link below:\n\n${process.env.NEXTAUTH_URL}/auth/verify?token=${token}`,
-    html: `<p>Hello!</p><p>Please verify your email by clicking the link below:</p><a href="${process.env.NEXTAUTH_URL}/auth/verify?token=${token}">Verify Email</a>`,
+    text: `Hello! Please verify your email by clicking the link below:\n\n${process.env.NEXTAUTH_URL}/api/verify-email?token=${token}`,
+    html: `<p>Hello!</p><p>Please verify your email by clicking the link below:</p><a href="${process.env.NEXTAUTH_URL}/api/verify-email?token=${token}">Verify Email</a>`,
   };
 
   try {

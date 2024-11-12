@@ -28,11 +28,12 @@ const RegisterPage = () => {
     });
 
     if (response.ok) {
-      if (formData.role === 'consumer') {
-        router.push('/cdash/profile');
-      } else if (formData.role === 'vendor') {
-        router.push('/vdash/profile');
-      }
+      router.push('/auth/registration-complete'); 
+      // if (formData.role === 'consumer') {
+      //   router.push('/cdash/profile');
+      // } else if (formData.role === 'vendor') {
+      //   router.push('/vdash/profile');
+      // }
     } else {
       const data = await response.json();
       setError(data.error || 'Registration failed');
